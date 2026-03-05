@@ -11,7 +11,7 @@ import java.nio.file.StandardCopyOption
 object GixyBinaryManager {
     private val LOG = Logger.getInstance(GixyBinaryManager::class.java)
 
-    private const val GIXY_VERSION = "0.2.34"
+    private const val GIXY_VERSION = "0.2.35"
     private const val GITHUB_RELEASE_BASE =
         "https://github.com/dvershinin/gixy/releases/download"
 
