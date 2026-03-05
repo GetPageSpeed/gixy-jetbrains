@@ -2,7 +2,6 @@
     <id>com.getpagespeed.gixy</id>
     <name>Gixy - Nginx Security Scanner</name>
     <vendor email="info@getpagespeed.com" url="https://gixy.getpagespeed.com">GetPageSpeed</vendor>
-    <icon>icons/gixy.svg</icon>
 
     <description><![CDATA[
     <p>Security analyzer for NGINX configuration files, powered by <a href="https://github.com/dvershinin/gixy">gixy</a>.</p>
