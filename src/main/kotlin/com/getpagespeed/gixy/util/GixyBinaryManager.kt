@@ -62,8 +62,8 @@ object GixyBinaryManager {
 
     private fun platformSuffix(): String? {
         return when {
-            SystemInfo.isMac && isArm64() -> "darwin-arm64"
-            SystemInfo.isMac -> "darwin-x86_64"
+            SystemInfo.isMac -> "darwin-arm64"
+            SystemInfo.isLinux && isArm64() -> "linux-aarch64"
             SystemInfo.isLinux -> "linux-x86_64"
             SystemInfo.isWindows -> "windows-x64"
             else -> null
