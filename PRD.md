@@ -44,11 +44,10 @@
 - [ ] Verify all 4 platform binaries appear on the GitHub release
 - [ ] Update `GIXY_VERSION` in `GixyBinaryManager.kt` to match
 
-### 1.3 Plugin Icon (TODO)
-- [ ] Add `gixy.svg` icon (40x40, shield + "G" design)
-  - **How**: File should already exist at `src/main/resources/icons/gixy.svg` (created by this session)
-  - Register in `plugin.xml`: add `<icon>icons/gixy.svg</icon>` after `<vendor>` tag
-- [ ] Verify icon shows in `./gradlew runIde`
+### 1.3 Plugin Icon (DONE)
+- [x] Add `gixy.svg` icon (40x40, shield + "G" design)
+  - File at `src/main/resources/icons/gixy.svg`, registered in `plugin.xml`
+- [x] Verify icon shows in `./gradlew runIde`
 
 ### 1.4 Manual Testing (TODO)
 - [ ] Run `./gradlew runIde` to launch sandbox IntelliJ:
