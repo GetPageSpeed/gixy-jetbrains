@@ -48,6 +48,7 @@ JetBrains IDE
 | File | Purpose |
 |------|---------|
 | `src/main/resources/META-INF/plugin.xml` | Extension registrations, plugin metadata |
+| `src/main/resources/META-INF/pluginIcon.svg` | Plugin icon (40x40 SVG, must be in META-INF/) |
 | `src/main/kotlin/.../model/GixyIssue.kt` | Data classes for gixy JSON output |
 | `src/main/kotlin/.../util/GixyRunner.kt` | Process execution, JSON parsing |
 | `src/main/kotlin/.../util/GixyBinaryManager.kt` | Download/cache frozen binary |
