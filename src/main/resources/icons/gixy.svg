@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
+  <!-- Shield body -->
+  <path d="M20 2 L36 8 L36 20 C36 30 28 36 20 38 C12 36 4 30 4 20 L4 8 Z"
+        fill="#4A90D9"/>
+  <!-- Shield inner highlight for depth -->
+  <path d="M20 4.5 L34 9.5 L34 20 C34 29 27 34.5 20 36.3 C13 34.5 6 29 6 20 L6 9.5 Z"
+        fill="#5DA0E8"/>
+  <!-- Letter "G" as path — clean geometric construction -->
+  <path d="M22.5 20 L27 20 L27 23.5 C25.8 25.8 23.2 27.5 20 27.5
+           C15.6 27.5 12 24.2 12 20 C12 15.8 15.6 12.5 20 12.5
+           C22.5 12.5 24.7 13.6 26 15.4 L23.5 17.2
+           C22.7 16.2 21.5 15.5 20 15.5 C17.2 15.5 15 17.5 15 20
+           C15 22.5 17.2 24.5 20 24.5 C21.8 24.5 23.3 23.5 24 22.2
+           L22.5 22.2 Z"
+        fill="white"/>
+  <!-- Small "x" next to G -->
+  <path d="M28 22 L30 25 M30 22 L28 25" stroke="white" stroke-width="1.8"
+        stroke-linecap="round" fill="none" opacity="0.85"/>
+</svg>
