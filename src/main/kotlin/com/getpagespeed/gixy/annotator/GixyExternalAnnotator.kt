@@ -2,15 +2,11 @@ package com.getpagespeed.gixy.annotator
 
 import com.getpagespeed.gixy.model.GixyIssue
 import com.getpagespeed.gixy.settings.GixySettings
-import com.getpagespeed.gixy.util.GixyBinaryManager
 import com.getpagespeed.gixy.util.GixyRunner
 import com.intellij.ide.BrowserUtil
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.ExternalAnnotator
 import com.intellij.lang.annotation.HighlightSeverity
-import com.intellij.notification.NotificationGroupManager
-import com.intellij.notification.NotificationType
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
@@ -40,7 +36,6 @@ class GixyExternalAnnotator : ExternalAnnotator<GixyAnnotationInfo, List<GixyIss
             "HIGH" to 3,
         )
 
-        private var downloadAttempted = false
     }
 
     override fun collectInformation(file: PsiFile, editor: Editor, hasErrors: Boolean): GixyAnnotationInfo? {
@@ -51,8 +46,6 @@ class GixyExternalAnnotator : ExternalAnnotator<GixyAnnotationInfo, List<GixyIss
         val path = virtualFile.path
 
         if (!isNginxConfig(path)) return null
-
-        ensureBinaryAvailable()
 
         return GixyAnnotationInfo(
             filePath = path,
@@ -130,38 +123,6 @@ class GixyExternalAnnotator : ExternalAnnotator<GixyAnnotationInfo, List<GixyIss
         return sb.toString()
     }
 
-    private fun ensureBinaryAvailable() {
-        if (downloadAttempted) return
-        if (GixyRunner.resolveExecutable() != null) return
-
-        downloadAttempted = true
-        ApplicationManager.getApplication().executeOnPooledThread {
-            val notification = NotificationGroupManager.getInstance()
-                .getNotificationGroup("Gixy")
-
-            notification.createNotification(
-                "Gixy",
-                "Downloading gixy binary...",
-                NotificationType.INFORMATION
-            ).notify(null)
-
-            val result = GixyBinaryManager.download()
-
-            if (result != null) {
-                notification.createNotification(
-                    "Gixy",
-                    "Gixy binary ready. Re-open nginx config files to see security analysis.",
-                    NotificationType.INFORMATION
-                ).notify(null)
-            } else {
-                notification.createNotification(
-                    "Gixy",
-                    "Failed to download gixy binary. Install manually: pip install gixy-ng",
-                    NotificationType.WARNING
-                ).notify(null)
-            }
-        }
-    }
 }
 
 class GixyOpenDocsFix(
