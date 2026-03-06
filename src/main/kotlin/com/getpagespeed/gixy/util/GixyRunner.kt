@@ -46,30 +46,24 @@ object GixyRunner {
         }
     }
 
-    enum class ExecutableSource { SETTINGS, BUNDLED, PATH, NONE }
+    enum class ExecutableSource { BUNDLED, CUSTOM }
 
     data class ResolvedExecutable(val path: String, val source: ExecutableSource)
 
     fun resolveExecutable(): String? = resolveExecutableWithSource()?.path
 
     fun resolveExecutableWithSource(): ResolvedExecutable? {
-        val settings = GixySettings.getInstance()
-
-        if (settings.gixyPath.isNotBlank()) {
-            val file = File(settings.gixyPath)
-            if (file.exists() && file.canExecute()) {
-                return ResolvedExecutable(settings.gixyPath, ExecutableSource.SETTINGS)
-            }
-        }
-
         val binaryPath = GixyBinaryManager.getBinaryPath()
         if (binaryPath != null) {
             return ResolvedExecutable(binaryPath, ExecutableSource.BUNDLED)
         }
 
-        val pathBinary = findOnPath("gixy")
-        if (pathBinary != null) {
-            return ResolvedExecutable(pathBinary, ExecutableSource.PATH)
+        val settings = GixySettings.getInstance()
+        if (settings.gixyPath.isNotBlank()) {
+            val file = File(settings.gixyPath)
+            if (file.exists() && file.canExecute()) {
+                return ResolvedExecutable(settings.gixyPath, ExecutableSource.CUSTOM)
+            }
         }
 
         return null
@@ -90,17 +84,6 @@ object GixyRunner {
         } catch (e: IOException) {
             null
         }
-    }
-
-    private fun findOnPath(name: String): String? {
-        val pathDirs = System.getenv("PATH")?.split(File.pathSeparator) ?: return null
-        for (dir in pathDirs) {
-            val candidate = File(dir, name)
-            if (candidate.exists() && candidate.canExecute()) {
-                return candidate.absolutePath
-            }
-        }
-        return null
     }
 
     private fun parseOutput(json: String): List<GixyIssue> {

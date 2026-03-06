@@ -35,7 +35,7 @@ class GixyConfigurable : Configurable {
             }
             row("Gixy executable:") {
                 cell(pathField).resizableColumn()
-                    .comment("Leave empty to use bundled binary or auto-detect from PATH")
+                    .comment("Leave empty to use the bundled binary (recommended)")
             }
             row("Minimum severity:") {
                 cell(severityComboBox)
@@ -53,15 +53,13 @@ class GixyConfigurable : Configurable {
     private fun updateStatus() {
         val resolved = GixyRunner.resolveExecutableWithSource()
         if (resolved == null) {
-            statusLabel.text = "Not found — install gixy or configure path above"
+            statusLabel.text = "Not found — will download on first use, or set path above"
             return
         }
 
         val sourceLabel = when (resolved.source) {
-            GixyRunner.ExecutableSource.SETTINGS -> "configured"
             GixyRunner.ExecutableSource.BUNDLED -> "bundled"
-            GixyRunner.ExecutableSource.PATH -> "system PATH"
-            GixyRunner.ExecutableSource.NONE -> "none"
+            GixyRunner.ExecutableSource.CUSTOM -> "custom"
         }
 
         val version = GixyRunner.getVersion(resolved.path)
