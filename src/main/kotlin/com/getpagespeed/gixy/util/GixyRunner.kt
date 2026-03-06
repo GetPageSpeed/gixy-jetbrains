@@ -46,22 +46,50 @@ object GixyRunner {
         }
     }
 
-    fun resolveExecutable(): String? {
+    enum class ExecutableSource { SETTINGS, BUNDLED, PATH, NONE }
+
+    data class ResolvedExecutable(val path: String, val source: ExecutableSource)
+
+    fun resolveExecutable(): String? = resolveExecutableWithSource()?.path
+
+    fun resolveExecutableWithSource(): ResolvedExecutable? {
         val settings = GixySettings.getInstance()
 
         if (settings.gixyPath.isNotBlank()) {
             val file = File(settings.gixyPath)
             if (file.exists() && file.canExecute()) {
-                return settings.gixyPath
+                return ResolvedExecutable(settings.gixyPath, ExecutableSource.SETTINGS)
             }
         }
 
         val binaryPath = GixyBinaryManager.getBinaryPath()
         if (binaryPath != null) {
-            return binaryPath
+            return ResolvedExecutable(binaryPath, ExecutableSource.BUNDLED)
         }
 
-        return findOnPath("gixy")
+        val pathBinary = findOnPath("gixy")
+        if (pathBinary != null) {
+            return ResolvedExecutable(pathBinary, ExecutableSource.PATH)
+        }
+
+        return null
+    }
+
+    fun getVersion(executable: String): String? {
+        return try {
+            val process = ProcessBuilder(executable, "--version")
+                .redirectErrorStream(true)
+                .start()
+            val output = process.inputStream.bufferedReader().readText().trim()
+            val finished = process.waitFor(5, TimeUnit.SECONDS)
+            if (!finished) {
+                process.destroyForcibly()
+                return null
+            }
+            output.ifBlank { null }
+        } catch (e: IOException) {
+            null
+        }
     }
 
     private fun findOnPath(name: String): String? {

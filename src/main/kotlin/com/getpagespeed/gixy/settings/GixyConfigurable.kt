@@ -1,9 +1,11 @@
 package com.getpagespeed.gixy.settings
 
+import com.getpagespeed.gixy.util.GixyRunner
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.components.JBCheckBox
+import com.intellij.ui.components.JBLabel
 import com.intellij.ui.dsl.builder.panel
 import javax.swing.JComponent
 import javax.swing.JComboBox
@@ -13,6 +15,7 @@ class GixyConfigurable : Configurable {
     private var pathField = TextFieldWithBrowseButton()
     private var severityComboBox = JComboBox(arrayOf("UNSPECIFIED", "LOW", "MEDIUM", "HIGH"))
     private var onSaveOnlyCheckBox = JBCheckBox("Analyze on save only (improves performance)")
+    private var statusLabel = JBLabel("")
 
     override fun getDisplayName(): String = "Gixy"
 
@@ -23,6 +26,8 @@ class GixyConfigurable : Configurable {
             null,
             FileChooserDescriptorFactory.createSingleFileDescriptor()
         )
+
+        updateStatus()
 
         return panel {
             row {
@@ -38,7 +43,30 @@ class GixyConfigurable : Configurable {
             row {
                 cell(onSaveOnlyCheckBox)
             }
+            separator()
+            row("Status:") {
+                cell(statusLabel)
+            }
         }
+    }
+
+    private fun updateStatus() {
+        val resolved = GixyRunner.resolveExecutableWithSource()
+        if (resolved == null) {
+            statusLabel.text = "Not found — install gixy or configure path above"
+            return
+        }
+
+        val sourceLabel = when (resolved.source) {
+            GixyRunner.ExecutableSource.SETTINGS -> "configured"
+            GixyRunner.ExecutableSource.BUNDLED -> "bundled"
+            GixyRunner.ExecutableSource.PATH -> "system PATH"
+            GixyRunner.ExecutableSource.NONE -> "none"
+        }
+
+        val version = GixyRunner.getVersion(resolved.path)
+        val versionText = if (version != null) " — $version" else ""
+        statusLabel.text = "<html><b>$sourceLabel</b>$versionText<br><small>${resolved.path}</small></html>"
     }
 
     override fun isModified(): Boolean {
@@ -55,6 +83,7 @@ class GixyConfigurable : Configurable {
         settings.gixyPath = pathField.text
         settings.minimumSeverity = severityComboBox.selectedItem as String
         settings.analyzeOnSaveOnly = onSaveOnlyCheckBox.isSelected
+        updateStatus()
     }
 
     override fun reset() {
@@ -63,5 +92,6 @@ class GixyConfigurable : Configurable {
         pathField.text = settings.gixyPath
         severityComboBox.selectedItem = settings.minimumSeverity
         onSaveOnlyCheckBox.isSelected = settings.analyzeOnSaveOnly
+        updateStatus()
     }
 }
