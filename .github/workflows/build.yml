@@ -22,13 +22,13 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Run tests
-        run: ./gradlew test
+        run: ./gradlew test --no-configuration-cache
 
       - name: Build plugin
-        run: ./gradlew buildPlugin
+        run: ./gradlew buildPlugin --no-configuration-cache
 
       - name: Verify plugin
-        run: ./gradlew verifyPlugin
+        run: ./gradlew verifyPlugin --no-configuration-cache
 
       - name: Upload plugin ZIP
         uses: actions/upload-artifact@v4
