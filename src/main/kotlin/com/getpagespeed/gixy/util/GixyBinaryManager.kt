@@ -7,6 +7,8 @@ import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 
 object GixyBinaryManager {
+    const val GIXY_VERSION = "0.2.36"
+
     private val LOG = Logger.getInstance(GixyBinaryManager::class.java)
 
     private val binaryDir: Path

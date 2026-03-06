@@ -12,7 +12,6 @@ import com.intellij.openapi.components.Storage
 class GixySettings : PersistentStateComponent<GixySettings.State> {
     data class State(
         var enabled: Boolean = true,
-        var gixyPath: String = "",
         var minimumSeverity: String = "LOW",
         var analyzeOnSaveOnly: Boolean = false,
     )
@@ -28,10 +27,6 @@ class GixySettings : PersistentStateComponent<GixySettings.State> {
     var enabled: Boolean
         get() = state.enabled
         set(value) { state.enabled = value }
-
-    var gixyPath: String
-        get() = state.gixyPath
-        set(value) { state.gixyPath = value }
 
     var minimumSeverity: String
         get() = state.minimumSeverity

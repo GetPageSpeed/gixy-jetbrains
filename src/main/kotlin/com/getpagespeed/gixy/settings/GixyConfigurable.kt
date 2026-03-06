@@ -1,43 +1,27 @@
 package com.getpagespeed.gixy.settings
 
-import com.getpagespeed.gixy.util.GixyRunner
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
+import com.getpagespeed.gixy.util.GixyBinaryManager
 import com.intellij.openapi.options.Configurable
-import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.dsl.builder.panel
 import javax.swing.JComponent
 import javax.swing.JComboBox
-import javax.swing.SwingUtilities
 
 class GixyConfigurable : Configurable {
     private var enabledCheckBox = JBCheckBox("Enable Gixy analysis")
-    private var pathField = TextFieldWithBrowseButton()
     private var severityComboBox = JComboBox(arrayOf("UNSPECIFIED", "LOW", "MEDIUM", "HIGH"))
     private var onSaveOnlyCheckBox = JBCheckBox("Analyze on save only (improves performance)")
-    private var statusLabel = JBLabel("Detecting...")
+    private var statusLabel = JBLabel()
 
     override fun getDisplayName(): String = "Gixy"
 
     override fun createComponent(): JComponent {
-        pathField.addBrowseFolderListener(
-            "Select Gixy Executable",
-            "Path to the gixy executable. Leave empty for auto-detection.",
-            null,
-            FileChooserDescriptorFactory.createSingleFileDescriptor()
-        )
-
-        updateStatusAsync()
+        updateStatus()
 
         return panel {
             row {
                 cell(enabledCheckBox)
-            }
-            row("Gixy executable:") {
-                cell(pathField).resizableColumn()
-                    .comment("Leave empty to use the bundled binary (recommended)")
             }
             row("Minimum severity:") {
                 cell(severityComboBox)
@@ -52,34 +36,18 @@ class GixyConfigurable : Configurable {
         }
     }
 
-    private fun updateStatusAsync() {
-        ApplicationManager.getApplication().executeOnPooledThread {
-            val resolved = GixyRunner.resolveExecutableWithSource()
-            if (resolved == null) {
-                SwingUtilities.invokeLater {
-                    statusLabel.text = "Not found — set path above"
-                }
-                return@executeOnPooledThread
-            }
-
-            val sourceLabel = when (resolved.source) {
-                GixyRunner.ExecutableSource.BUNDLED -> "bundled"
-                GixyRunner.ExecutableSource.CUSTOM -> "custom"
-            }
-
-            val version = GixyRunner.getVersion(resolved.path)
-            val versionText = if (version != null) " — $version" else ""
-
-            SwingUtilities.invokeLater {
-                statusLabel.text = "<html><b>$sourceLabel</b>$versionText<br><small>${resolved.path}</small></html>"
-            }
+    private fun updateStatus() {
+        val binaryPath = GixyBinaryManager.getBinaryPath()
+        statusLabel.text = if (binaryPath != null) {
+            "<html><b>Bundled</b> v${GixyBinaryManager.GIXY_VERSION}<br><small>$binaryPath</small></html>"
+        } else {
+            "Binary not available for this platform"
         }
     }
 
     override fun isModified(): Boolean {
         val settings = GixySettings.getInstance()
         return enabledCheckBox.isSelected != settings.enabled
-                || pathField.text != settings.gixyPath
                 || severityComboBox.selectedItem as String != settings.minimumSeverity
                 || onSaveOnlyCheckBox.isSelected != settings.analyzeOnSaveOnly
     }
@@ -87,18 +55,14 @@ class GixyConfigurable : Configurable {
     override fun apply() {
         val settings = GixySettings.getInstance()
         settings.enabled = enabledCheckBox.isSelected
-        settings.gixyPath = pathField.text
         settings.minimumSeverity = severityComboBox.selectedItem as String
         settings.analyzeOnSaveOnly = onSaveOnlyCheckBox.isSelected
-        updateStatusAsync()
     }
 
     override fun reset() {
         val settings = GixySettings.getInstance()
         enabledCheckBox.isSelected = settings.enabled
-        pathField.text = settings.gixyPath
         severityComboBox.selectedItem = settings.minimumSeverity
         onSaveOnlyCheckBox.isSelected = settings.analyzeOnSaveOnly
-        updateStatusAsync()
     }
 }

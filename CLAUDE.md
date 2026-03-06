@@ -39,7 +39,7 @@ JetBrains IDE
               └── GixyOpenDocsFix — opens reference URL in browser
 ```
 
-- **Binary resolution order**: Settings path → `~/.gixy-jetbrains/bin/gixy` (downloaded) → system PATH
+- **Binary resolution**: Bundled binary extracted to `~/.gixy-jetbrains/bin/gixy` on first use (no download, no PATH detection)
 - **Nginx file detection**: Regex patterns matching `*.conf`, `sites-available/*`, `conf.d/*`, `*nginx*`
 - **No custom language/file type**: Works alongside any nginx plugin the user has installed
 
@@ -51,7 +51,7 @@ JetBrains IDE
 | `src/main/resources/META-INF/pluginIcon.svg` | Plugin icon (40x40 SVG, must be in META-INF/) |
 | `src/main/kotlin/.../model/GixyIssue.kt` | Data classes for gixy JSON output |
 | `src/main/kotlin/.../util/GixyRunner.kt` | Process execution, JSON parsing |
-| `src/main/kotlin/.../util/GixyBinaryManager.kt` | Download/cache frozen binary |
+| `src/main/kotlin/.../util/GixyBinaryManager.kt` | Extract bundled binary from JAR |
 | `src/main/kotlin/.../annotator/GixyExternalAnnotator.kt` | Core annotator + file detection |
 | `src/main/kotlin/.../annotator/GixyQuickFix.kt` | Quick-fix actions |
 | `src/main/kotlin/.../settings/GixySettings.kt` | Persistent state |
@@ -70,7 +70,7 @@ JetBrains IDE
 ## Related Projects
 
 - **Gixy** (the engine): `~/Projects/gixy/` — Python nginx security analyzer
-- **PyInstaller workflow**: `~/Projects/gixy/.github/workflows/pyinstaller.yml` — builds frozen binaries
+- **PyInstaller workflow**: `~/Projects/gixy/.github/workflows/frozen-binaries.yml` — builds frozen binaries
 - **Gixy docs**: https://gixy.getpagespeed.com
 
 ## Gixy JSON Output Format

@@ -9,3 +9,4 @@ out/
 .intellijPlatform/
 local.properties
 .DS_Store
+src/main/gen/

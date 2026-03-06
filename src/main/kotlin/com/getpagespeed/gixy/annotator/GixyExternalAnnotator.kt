@@ -54,7 +54,7 @@ class GixyExternalAnnotator : ExternalAnnotator<GixyAnnotationInfo, List<GixyIss
     }
 
     override fun doAnnotate(info: GixyAnnotationInfo): List<GixyIssue> {
-        val issues = GixyRunner.run(info.filePath)
+        val issues = GixyRunner.analyze(info.filePath, info.fileContent)
 
         val settings = GixySettings.getInstance()
         val minSeverity = SEVERITY_ORDER[settings.minimumSeverity] ?: 0

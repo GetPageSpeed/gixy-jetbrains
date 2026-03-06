@@ -1,16 +1,18 @@
 import de.undercouch.gradle.tasks.download.Download
+import org.jetbrains.grammarkit.tasks.GenerateLexerTask
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.9.25"
     id("org.jetbrains.intellij.platform") version "2.11.0"
     id("de.undercouch.download") version "5.6.0"
+    id("org.jetbrains.grammarkit") version "2022.3.2.2"
 }
 
 group = providers.gradleProperty("pluginGroup").get()
 version = providers.gradleProperty("pluginVersion").get()
 
-val gixyVersion = "0.2.35"
+val gixyVersion = "0.2.36"
 val gixyBinaries = listOf(
     "gixy-darwin-arm64",
     "gixy-linux-x86_64",
@@ -35,6 +37,27 @@ dependencies {
         testFramework(TestFrameworkType.Platform)
     }
     testImplementation("junit:junit:4.13.2")
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir("src/main/gen")
+        }
+    }
+}
+
+tasks.named<GenerateLexerTask>("generateLexer") {
+    sourceFile.set(file("src/main/grammars/Nginx.flex"))
+    targetOutputDir.set(file("src/main/gen/com/getpagespeed/gixy/lexer"))
+}
+
+tasks.named("compileKotlin") {
+    dependsOn("generateLexer")
+}
+
+tasks.named("compileJava") {
+    dependsOn("generateLexer")
 }
 
 val downloadGixyBinaries by tasks.registering(Download::class) {

@@ -26,9 +26,17 @@
                 name="Nginx Configuration"
                 implementationClass="com.getpagespeed.gixy.NginxConfFileType"
                 fieldName="INSTANCE"
-                language="TEXT"
+                language="Nginx"
                 fileNames="nginx.conf"
                 patterns="*.nginx;*.nginx.conf"/>
+
+        <lang.parserDefinition
+                language="Nginx"
+                implementationClass="com.getpagespeed.gixy.parser.NginxParserDefinition"/>
+
+        <lang.syntaxHighlighterFactory
+                language="Nginx"
+                implementationClass="com.getpagespeed.gixy.lexer.NginxSyntaxHighlighterFactory"/>
 
         <externalAnnotator
                 implementationClass="com.getpagespeed.gixy.annotator.GixyExternalAnnotator"
@@ -42,6 +50,9 @@
 
         <applicationService
                 serviceImplementation="com.getpagespeed.gixy.settings.GixySettings"/>
+
+        <applicationService
+                serviceImplementation="com.getpagespeed.gixy.util.GixyServerProcess"/>
 
         <notificationGroup
                 id="Gixy"
