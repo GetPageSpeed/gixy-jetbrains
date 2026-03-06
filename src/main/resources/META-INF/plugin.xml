@@ -1,6 +1,6 @@
 <idea-plugin>
     <id>com.getpagespeed.gixy</id>
-    <name>Gixy - Nginx Security Scanner</name>
+    <name>Gixy</name>
     <vendor email="info@getpagespeed.com" url="https://gixy.getpagespeed.com">GetPageSpeed</vendor>
 
     <description><![CDATA[

@@ -77,7 +77,7 @@ tasks.named<Copy>("processResources") {
 tasks {
     patchPluginXml {
         sinceBuild.set(providers.gradleProperty("pluginSinceBuild"))
-        untilBuild.set(provider { "" })
+        untilBuild.set(provider { null })
     }
 
     publishPlugin {
