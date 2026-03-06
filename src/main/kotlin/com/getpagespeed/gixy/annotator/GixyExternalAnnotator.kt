@@ -95,11 +95,11 @@ class GixyExternalAnnotator : ExternalAnnotator<GixyAnnotationInfo, List<GixyIss
         }
     }
 
-    private fun isNginxConfig(path: String): Boolean {
+    internal fun isNginxConfig(path: String): Boolean {
         return NGINX_FILE_PATTERNS.any { it.matches(path) }
     }
 
-    private fun mapSeverity(severity: String): HighlightSeverity {
+    internal fun mapSeverity(severity: String): HighlightSeverity {
         return when (severity) {
             "HIGH" -> HighlightSeverity.ERROR
             "MEDIUM" -> HighlightSeverity.WARNING

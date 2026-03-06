@@ -86,7 +86,7 @@ object GixyRunner {
         }
     }
 
-    private fun parseOutput(json: String): List<GixyIssue> {
+    internal fun parseOutput(json: String): List<GixyIssue> {
         if (json.isBlank()) return emptyList()
 
         return try {
