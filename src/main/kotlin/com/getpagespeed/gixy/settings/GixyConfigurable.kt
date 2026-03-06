@@ -1,6 +1,7 @@
 package com.getpagespeed.gixy.settings
 
 import com.getpagespeed.gixy.util.GixyRunner
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
@@ -9,13 +10,14 @@ import com.intellij.ui.components.JBLabel
 import com.intellij.ui.dsl.builder.panel
 import javax.swing.JComponent
 import javax.swing.JComboBox
+import javax.swing.SwingUtilities
 
 class GixyConfigurable : Configurable {
     private var enabledCheckBox = JBCheckBox("Enable Gixy analysis")
     private var pathField = TextFieldWithBrowseButton()
     private var severityComboBox = JComboBox(arrayOf("UNSPECIFIED", "LOW", "MEDIUM", "HIGH"))
     private var onSaveOnlyCheckBox = JBCheckBox("Analyze on save only (improves performance)")
-    private var statusLabel = JBLabel("")
+    private var statusLabel = JBLabel("Detecting...")
 
     override fun getDisplayName(): String = "Gixy"
 
@@ -27,7 +29,7 @@ class GixyConfigurable : Configurable {
             FileChooserDescriptorFactory.createSingleFileDescriptor()
         )
 
-        updateStatus()
+        updateStatusAsync()
 
         return panel {
             row {
@@ -50,21 +52,28 @@ class GixyConfigurable : Configurable {
         }
     }
 
-    private fun updateStatus() {
-        val resolved = GixyRunner.resolveExecutableWithSource()
-        if (resolved == null) {
-            statusLabel.text = "Not found — will download on first use, or set path above"
-            return
-        }
+    private fun updateStatusAsync() {
+        ApplicationManager.getApplication().executeOnPooledThread {
+            val resolved = GixyRunner.resolveExecutableWithSource()
+            if (resolved == null) {
+                SwingUtilities.invokeLater {
+                    statusLabel.text = "Not found — set path above"
+                }
+                return@executeOnPooledThread
+            }
 
-        val sourceLabel = when (resolved.source) {
-            GixyRunner.ExecutableSource.BUNDLED -> "bundled"
-            GixyRunner.ExecutableSource.CUSTOM -> "custom"
-        }
+            val sourceLabel = when (resolved.source) {
+                GixyRunner.ExecutableSource.BUNDLED -> "bundled"
+                GixyRunner.ExecutableSource.CUSTOM -> "custom"
+            }
 
-        val version = GixyRunner.getVersion(resolved.path)
-        val versionText = if (version != null) " — $version" else ""
-        statusLabel.text = "<html><b>$sourceLabel</b>$versionText<br><small>${resolved.path}</small></html>"
+            val version = GixyRunner.getVersion(resolved.path)
+            val versionText = if (version != null) " — $version" else ""
+
+            SwingUtilities.invokeLater {
+                statusLabel.text = "<html><b>$sourceLabel</b>$versionText<br><small>${resolved.path}</small></html>"
+            }
+        }
     }
 
     override fun isModified(): Boolean {
@@ -81,7 +90,7 @@ class GixyConfigurable : Configurable {
         settings.gixyPath = pathField.text
         settings.minimumSeverity = severityComboBox.selectedItem as String
         settings.analyzeOnSaveOnly = onSaveOnlyCheckBox.isSelected
-        updateStatus()
+        updateStatusAsync()
     }
 
     override fun reset() {
@@ -90,6 +99,6 @@ class GixyConfigurable : Configurable {
         pathField.text = settings.gixyPath
         severityComboBox.selectedItem = settings.minimumSeverity
         onSaveOnlyCheckBox.isSelected = settings.analyzeOnSaveOnly
-        updateStatus()
+        updateStatusAsync()
     }
 }
