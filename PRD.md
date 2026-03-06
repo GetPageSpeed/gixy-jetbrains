@@ -25,37 +25,30 @@
 - [x] Plugin ZIP produces (`./gradlew buildPlugin` → 39KB)
 - [x] Test nginx config created with known issues
 
-### 1.2 PyInstaller Frozen Binaries (TODO)
+### 1.2 PyInstaller Frozen Binaries (DONE)
 **Why**: Lets users install the plugin without needing Python. Binary auto-downloads on first launch.
 
-- [ ] Add `pyinstaller.yml` workflow to gixy repo (`.github/workflows/`)
-  - **How**: Copy from `~/Projects/gixy/.github/workflows/pyinstaller.yml` (created by this session)
-  - Trigger: on release published
-  - Matrix: macOS arm64, macOS x86_64, Linux x86_64, Windows x64
+- [x] Add `frozen-binaries.yml` workflow to gixy repo (`.github/workflows/`)
+  - Trigger: on release published + workflow_dispatch
+  - Matrix: macOS arm64, Linux x86_64, Linux aarch64, Windows x64
+  - macOS x86_64 dropped (Rosetta 2 runs arm64 binary on Intel Macs)
+  - Uses `--collect-all crossplane --collect-all gixy` for hidden imports
   - Uploads binaries + checksums to GitHub release
-- [ ] Test locally first:
-  ```bash
-  cd ~/Projects/gixy
-  pip install pyinstaller
-  pyinstaller --onefile --name gixy gixy/__main__.py
-  # Test: ./dist/gixy --format json ~/Projects/gixy-jetbrains-plugin/test-configs/nginx.conf
-  ```
-- [ ] Tag a new gixy release to trigger the workflow
-- [ ] Verify all 4 platform binaries appear on the GitHub release
-- [ ] Update `GIXY_VERSION` in `GixyBinaryManager.kt` to match
+- [x] Tested locally: PyInstaller binary runs and detects issues correctly
+- [x] All 4 platform builds pass on GitHub Actions
+- [x] v0.2.35 release has all binaries + checksums.txt
+- [x] `GIXY_VERSION` in `GixyBinaryManager.kt` set to `0.2.35`
 
 ### 1.3 Plugin Icon (DONE)
 - [x] Add `gixy.svg` icon (40x40, shield + "G" design)
-  - File at `src/main/resources/icons/gixy.svg`, registered in `plugin.xml`
+  - File at `src/main/resources/META-INF/pluginIcon.svg` (standard convention)
+  - Note: `<icon>` element in plugin.xml not supported in build 241; use `pluginIcon.svg` in META-INF/
 - [x] Verify icon shows in `./gradlew runIde`
 
-### 1.4 Manual Testing (TODO)
-- [ ] Run `./gradlew runIde` to launch sandbox IntelliJ:
-  ```bash
-  export JAVA_HOME=$(brew --prefix openjdk@17)/libexec/openjdk.jdk/Contents/Home
-  cd ~/Projects/gixy-jetbrains-plugin
-  ./gradlew runIde
-  ```
+### 1.4 Manual Testing (DONE)
+- [x] Run `./gradlew runIde` to launch sandbox IntelliJ
+  - JDK 17 configured in `gradle.properties` — no `export JAVA_HOME` needed
+- [x] Plugin loads without errors (fixed `<icon>` SEVERE error)
 - [ ] Open `test-configs/nginx.conf` in the sandbox IDE
 - [ ] Verify annotations appear on lines 9 (server_tokens) and 20 (ssrf proxy_pass)
 - [ ] Verify quick-fix works: click the fix for server_tokens → should change to `server_tokens off`
@@ -63,15 +56,10 @@
 - [ ] Verify Settings > Tools > Gixy panel appears and works
 - [ ] Test with gixy not available: set a bad path in settings, verify graceful handling
 
-### 1.5 Create GitHub Repo (TODO)
-- [ ] Create repo on GitHub:
-  ```bash
-  cd ~/Projects/gixy-jetbrains-plugin
-  gh repo create getpagespeed/gixy-jetbrains --public --source=. --push
-  ```
-  Or if you prefer a different org/name, adjust accordingly.
-- [ ] Add a LICENSE file (Apache 2.0 to match gixy)
-- [ ] Push initial commit
+### 1.5 Create GitHub Repo (DONE)
+- [x] Repo created: https://github.com/GetPageSpeed/gixy-jetbrains
+- [x] LICENSE file added (Apache 2.0)
+- [x] All source pushed to main branch
 
 ### 1.6 JetBrains Marketplace Submission (TODO)
 - [ ] Create a JetBrains Marketplace vendor account at https://plugins.jetbrains.com/author/me
@@ -91,14 +79,8 @@
   ./gradlew publishPlugin
   ```
 
-### 1.7 README.md (TODO)
-- [ ] Create `README.md` with:
-  - Plugin description and screenshot
-  - Installation (from Marketplace + manual ZIP)
-  - Configuration (settings panel)
-  - How it works (ExternalAnnotator + gixy)
-  - Link to gixy docs
-  - License
+### 1.7 README.md (DONE)
+- [x] Created `README.md` with features, installation, configuration, build instructions, related projects, and license
 
 ---
 
@@ -182,8 +164,8 @@
 
 ### Build Commands
 ```bash
-export JAVA_HOME=$(brew --prefix openjdk@17)/libexec/openjdk.jdk/Contents/Home
 cd ~/Projects/gixy-jetbrains-plugin
+# JDK 17 is configured in gradle.properties — no export needed
 
 ./gradlew build              # Compile + check
 ./gradlew buildPlugin        # Produce ZIP in build/distributions/
@@ -200,6 +182,6 @@ cd ~/Projects/gixy-jetbrains-plugin
 ### Project Paths
 - Plugin source: `~/Projects/gixy-jetbrains-plugin/`
 - Gixy source: `~/Projects/gixy/`
-- PyInstaller workflow: `~/Projects/gixy/.github/workflows/pyinstaller.yml`
+- PyInstaller workflow: `~/Projects/gixy/.github/workflows/frozen-binaries.yml`
 - Test config: `~/Projects/gixy-jetbrains-plugin/test-configs/nginx.conf`
 - Built plugin: `~/Projects/gixy-jetbrains-plugin/build/distributions/gixy-jetbrains-plugin-0.1.0.zip`
