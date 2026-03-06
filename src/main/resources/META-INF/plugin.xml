@@ -26,6 +26,7 @@
                 name="Nginx Configuration"
                 implementationClass="com.getpagespeed.gixy.NginxConfFileType"
                 fieldName="INSTANCE"
+                language="TEXT"
                 fileNames="nginx.conf"
                 patterns="*.nginx;*.nginx.conf"/>
 
