@@ -90,3 +90,11 @@ tasks {
         password.set(providers.environmentVariable("PRIVATE_KEY_PASSWORD"))
     }
 }
+
+intellijPlatform {
+    pluginVerification {
+        ides {
+            recommended()
+        }
+    }
+}
