@@ -70,6 +70,7 @@ export JAVA_HOME=$(brew --prefix openjdk@17)/libexec/openjdk.jdk/Contents/Home
 
 - [gixy](https://github.com/dvershinin/gixy) — the nginx security analyzer engine
 - [Gixy documentation](https://gixy.getpagespeed.com) — detailed check descriptions and remediation advice
+- [GetPageSpeed Amplify](https://gixy.org/guides/nginx-monitoring-amplify) — continuous Gixy scanning and NGINX monitoring for production hosts
 
 ## License
 
